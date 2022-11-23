@@ -224,17 +224,19 @@ def buildTriangles( slice0, slice1 ):
     #
     # [1 mark]
     
-
     # [YOUR CODE HERE]
 
+    
 
-    minArea = [[None]] # CHANGE THIS
-    minDir  = [[None]] # CHANGE THIS
+    
 
-
+    
+    
+        
+    
     # Fill in the minArea array
 
-    minArea[0][0] = 0 # Starting edge has zero area
+    #Starting edge has zero area
 
     # Fill in row 0 of minArea and minDir, since it's a special case as there's no row -1
     #
