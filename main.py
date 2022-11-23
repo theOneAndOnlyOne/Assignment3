@@ -169,7 +169,13 @@ def buildTriangles( slice0, slice1 ):
     #
     # [1 mark] 
 
-
+    for i in slice0.verts:
+        vert1 = i
+        for j in slice1.verts:
+            vert2 = j
+            vertcoord = abs(vert1.x - vert2.x) + abs(vert1.y - vert2.y) + abs(vert1.z - vert2.z)
+    
+        
     # [YOUR CODE HERE]
 
 
