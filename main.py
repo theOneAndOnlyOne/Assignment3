@@ -168,14 +168,23 @@ def buildTriangles( slice0, slice1 ):
     # This can be done with "brute force" if you wish.
     #
     # [1 mark] 
-
-    for i in slice0.verts:
-        vert1 = i
-        for j in slice1.verts:
-            vert2 = j
-            vertcoord = abs(vert1.x - vert2.x) + abs(vert1.y - vert2.y) + abs(vert1.z - vert2.z)
+    iter = 0
+    allvertex = []
+    minval = float('inf')
+    for i in range(len(slice0.verts)):
+        for j in range(len(slice1.verts)):
+            if length(subtract(slice0.verts[i].coords, slice1.verts[j].coords)) < minval:
+                minSlice0 = slice0.verts[i]
+                minSlice1 = slice1.verts[j]
+                minval = length(subtract(slice0.verts[i].coords, slice1.verts[j].coords))
+    print("\n")
+    print(minSlice0)
+    print(minSlice1)
+                
+            
     
-        
+
+    
     # [YOUR CODE HERE]
 
 
@@ -186,9 +195,22 @@ def buildTriangles( slice0, slice1 ):
     # triangulation ends up on the same edge as it started.
     #
     # [1 mark]
+    
+    for s in slice0.verts:
+        if s == minSlice0:
+            sVal = s
+            slice0.verts.remove(s)
+            slice0.verts.insert(0,sVal)
+    print(slice0.verts)
+
+    for k in slice1.verts:
+        if k == minSlice1:
+            kVal = k
+            slice1.verts.remove(k)
+            slice1.verts.insert(0,kVal)
+    print(slice1.verts)
 
 
-    # [YOUR CODE HERE]
 
 
     # Set up the 'minArea' array.  The first dimension (rows) of the
@@ -201,7 +223,7 @@ def buildTriangles( slice0, slice1 ):
     # row or previous column.
     #
     # [1 mark]
-
+    
 
     # [YOUR CODE HERE]
 
