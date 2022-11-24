@@ -200,14 +200,14 @@ def buildTriangles( slice0, slice1 ):
         if s == minSlice0:
             sVal = s
             slice0.verts.remove(s)
-            slice0.verts.insert(0,sVal)
+            slice0.verts.append(sVal)
     print(slice0.verts)
 
     for k in slice1.verts:
         if k == minSlice1:
             kVal = k
             slice1.verts.remove(k)
-            slice1.verts.insert(0,kVal)
+            slice1.verts.append(kVal)
     print(slice1.verts)
 
 
@@ -229,9 +229,22 @@ def buildTriangles( slice0, slice1 ):
     
 
     
+    minArea = [[None for row in range(len(slice0.verts))] for col in range(len(slice1.verts))]
+    minDir = []
 
+    for iter1 in range(len(slice0.verts)):
+        minArea[0][iter1] = float('inf')
     
+    for iter2 in range(len(slice0.verts)):
+        minArea[iter2][0] = float('inf')  
     
+    for iterA in range(1,len(slice0.verts)):
+        
+        for iterB in range(1, len(slice0.verts)):
+            minArea[iterB][iterA] = min( minArea[iterA][iterB+1] + triangleArea((slice0.verts[iterA], slice0.verts[iterA+1], slice0.verts[iterB+1])), minArea[iterA+1][iterB] + triangleArea((slice0.verts[iterB+1], slice0.verts[iterB],slice0.verts[iterA+1])))
+
+    print(minArea)
+
         
     
     # Fill in the minArea array
