@@ -229,19 +229,23 @@ def buildTriangles( slice0, slice1 ):
     
 
     
-    minArea = [[None for row in range(len(slice0.verts))] for col in range(len(slice1.verts))]
+    minArea = [[None for row in range(len(slice0.verts)+1)] for col in range(len(slice1.verts)+1)]
     minDir = []
 
-    for iter1 in range(len(slice0.verts)):
-        minArea[0][iter1] = float('inf')
+    #for iter1 in range(len(slice0.verts)):
+    #    minArea[0][iter1] = float('inf')
     
-    for iter2 in range(len(slice0.verts)):
-        minArea[iter2][0] = float('inf')  
-    
-    for iterA in range(1,len(slice0.verts)):
+    #for iter2 in range(len(slice1.verts)):
+    #    minArea[iter2][0] = float('inf')  
+
+
+    for a in range(0,len(slice0.verts)):
+        minArea[0][a+1] = slice0.verts[a]
+    for b in range(0,len(slice1.verts)):
+        minArea[b+1][0] = slice1.verts[b]
         
-        for iterB in range(1, len(slice0.verts)):
-            minArea[iterB][iterA] = min( minArea[iterA][iterB+1] + triangleArea((slice0.verts[iterA], slice0.verts[iterA+1], slice0.verts[iterB+1])), minArea[iterA+1][iterB] + triangleArea((slice0.verts[iterB+1], slice0.verts[iterB],slice0.verts[iterA+1])))
+            
+
 
     print(minArea)
 
@@ -254,6 +258,8 @@ def buildTriangles( slice0, slice1 ):
     # Fill in row 0 of minArea and minDir, since it's a special case as there's no row -1
     #
     # [2 marks]
+    for c in range(0,len(slice0.verts)):
+        minArea[0][c+1] = triangleArea()
 
 
     # [YOUR CODE HERE]
