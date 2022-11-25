@@ -170,15 +170,16 @@ def buildTriangles( slice0, slice1 ):
     # [1 mark] 
 
     minval = float('inf')
-    for i in range(len(slice0.verts)):
-        for j in range(len(slice1.verts)):
+    for i in range(0,len(slice0.verts)):
+        for j in range(0,len(slice1.verts)):
             if length(subtract(slice0.verts[i].coords, slice1.verts[j].coords)) < minval:
                 minSlice0 = slice0.verts[i]
+                index0 = i
                 minSlice1 = slice1.verts[j]
+                index1 = j
                 minval = length(subtract(slice0.verts[i].coords, slice1.verts[j].coords))
-    #print("\n")
-    #print(minSlice0)
-    #print(minSlice1)
+    print("hello \n")
+ 
                 
             
     
@@ -195,23 +196,47 @@ def buildTriangles( slice0, slice1 ):
     #
     # [1 mark]
     
-    for s in slice0.verts:
-        if s == minSlice0:
-            sVal = s
-            slice0.verts.remove(s)
-            slice0.verts.append(sVal)
-            slice0.verts.insert(0,sVal)
-            break
-    #print(slice0.verts)
+    index0Check = index0
+    index1Check = index1
 
-    for k in slice1.verts:
-        if k == minSlice1:
-            kVal = k
-            slice1.verts.remove(k)
-            slice1.verts.append(kVal)
-            slice1.verts.insert(0,kVal)
-            break
-    #print(slice1.verts)
+    iter1 = 0
+    currentVert0 = minSlice0
+    newsliceVerts0 = []
+    newsliceVerts0.append(currentVert0)
+    while iter1 < len(slice0.verts):
+        currentVert0 = currentVert0.nextV
+        newsliceVerts0.append(currentVert0)
+        iter1 += 1
+    print(newsliceVerts0)
+
+    iter2 = 0
+    currentVert1 = minSlice1
+    newsliceVerts1 = []
+    newsliceVerts1.append(currentVert1)
+    while iter2 < len(slice1.verts):
+        currentVert1 = currentVert1.nextV
+        newsliceVerts1.append(currentVert1)
+        iter2 += 1
+    print(newsliceVerts1)
+
+    
+    # for s in slice0.verts:
+    #     if s == minSlice0:
+    #         sVal = s
+    #         slice0.verts.remove(s)
+    #         slice0.verts.append(sVal)
+    #         slice0.verts.insert(0,sVal)
+    #         break
+    # #print(slice0.verts)
+
+    # for k in slice1.verts:
+    #     if k == minSlice1:
+    #         kVal = k
+    #         slice1.verts.remove(k)
+    #         slice1.verts.append(kVal)
+    #         slice1.verts.insert(0,kVal)
+    #         break
+    # #print(slice1.verts)
 
 
     
@@ -230,15 +255,16 @@ def buildTriangles( slice0, slice1 ):
     # [YOUR CODE HERE]
 
    # print(len(slice0.verts))
-
+    len0plus1 = len(slice0.verts)
+    len1plus1 = len(slice1.verts)
     
-    minArea = [[0 for row in range(len(slice0.verts))] for col in range(len(slice1.verts))]
-    minDir = [[0 for row in range(len(slice0.verts))] for col in range(len(slice1.verts))]
+    minArea = [[0 for row in range(len0plus1+1)] for col in range(len1plus1+1)]
+    minDir = [[0 for row in range(len0plus1+1)] for col in range(len1plus1+1)]
 
     ##print(minArea)
     
 
-        
+    minArea[0][0] = 0    
     
     # Fill in the minArea array
 
@@ -248,8 +274,8 @@ def buildTriangles( slice0, slice1 ):
     #
     # [2 marks]
 
-    for a in range(1,len(slice0.verts)):
-        minArea[0][a] = triangleArea(slice0.verts[a-1].coords, slice1.verts[0].coords, slice0.verts[a].coords) + minArea[0][a-1]
+    for a in range(1,len0plus1+1):
+        minArea[0][a] = triangleArea(newsliceVerts0[a-1].coords, newsliceVerts1[0].coords, newsliceVerts0[a].coords) + minArea[0][a-1]
         minDir[0][a] = Dir.PREV_COL
 
     # [YOUR CODE HERE]
@@ -258,8 +284,8 @@ def buildTriangles( slice0, slice1 ):
     # Fill in col 0 of minArea and minDir, since it's a special case as there's no col -1
     #
     # [2 marks]
-    for b in range(1,len(slice1.verts)):
-        minArea[b][0] = triangleArea(slice1.verts[b-1].coords, slice0.verts[0].coords, slice1.verts[b].coords) + minArea[b-1][0]
+    for b in range(1,len1plus1+1):
+        minArea[b][0] = triangleArea(newsliceVerts1[b-1].coords, newsliceVerts0[0].coords, newsliceVerts1[b].coords) + minArea[b-1][0]
         minDir[b][0] = Dir.PREV_ROW
 
     # [YOUR CODE HERE]
@@ -268,16 +294,18 @@ def buildTriangles( slice0, slice1 ):
     # Fill in the remaining entries of minArea and minDir.  This is very similar to the above, but more general.
     #
     # [2 marks]
-    for c in range (1,len(slice1.verts)-1):
+    for c in range (1,len1plus1+1):
         
-        for d in range(1,len(slice0.verts)-1):
-            minArea[c][d] = min(minArea[c][d-1] + triangleArea(slice0.verts[d-1].coords, slice0.verts[d].coords, slice1.verts[c].coords), minArea[c-1][d] + triangleArea(slice1.verts[c-1].coords, slice1.verts[c].coords, slice0.verts[d].coords) )
-            if minArea[c][d] == minArea[c][d-1] + triangleArea(slice0.verts[d-1].coords, slice1.verts[d].coords, slice0.verts[c].coords):
+        for d in range(1,len0plus1+1):
+            minArea[c][d] = min((minArea[c][d-1] + triangleArea(newsliceVerts0[d-1].coords, newsliceVerts0[d].coords, newsliceVerts1[c].coords)), (minArea[c-1][d] + triangleArea(newsliceVerts1[c-1].coords, newsliceVerts0[d].coords, newsliceVerts1[c].coords)))
+            
+            
+            if minArea[c][d] == minArea[c][d-1] + triangleArea(newsliceVerts0[d-1].coords, newsliceVerts0[d].coords, newsliceVerts1[c].coords):
                 minDir[c][d] = Dir.PREV_COL
             else:
                 minDir[c][d] = Dir.PREV_ROW
-
-    #print(minArea)
+    
+    print(minArea)
     # [YOUR CODE HERE]
 
 
@@ -330,14 +358,14 @@ def buildTriangles( slice0, slice1 ):
 
     triangles = []
     run = 1
-    slice0Len = len(slice0.verts)-1 #c
-    slice1Len = len(slice1.verts)-1 #r
+    slice0Len = len(newsliceVerts0)-1
+    slice1Len = len(newsliceVerts1)-1 
     while run == 1:
         if minDir[slice1Len][slice0Len] == Dir.PREV_COL:
-            triangles.append(Triangle([slice1.verts[slice1Len], slice0.verts[slice0Len], slice0.verts[slice0Len-1]]))
+            triangles.append(Triangle([newsliceVerts1[slice1Len], newsliceVerts0[slice0Len], newsliceVerts0[slice0Len-1]]))
             slice0Len -= 1
         else:
-            triangles.append(Triangle([slice1.verts[slice1Len], slice0.verts[slice0Len], slice1.verts[slice1Len-1]]))
+            triangles.append(Triangle([newsliceVerts1[slice1Len], newsliceVerts0[slice0Len], newsliceVerts1[slice1Len-1]]))
             slice1Len -= 1
         if slice0Len == 0 and slice1Len == 0:
             run = 0

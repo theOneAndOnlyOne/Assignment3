@@ -231,122 +231,121 @@ def buildTriangles( slice0, slice1 ):
     # [YOUR CODE HERE]
 
     
-
-    
     numVerts0 = len(slice0.verts)
     numVerts1 = len(slice1.verts)
     minArea = [[0 for r in range(numVerts0+1)]for c in range(numVerts1+1)]
     minDir =  [[0 for r in range(numVerts0+1)]for c in range(numVerts1+1)]
-
-    #for iter1 in range(len(slice0.verts)):
-    #    minArea[0][iter1] = float('inf')
-    
-    #for iter2 in range(len(slice1.verts)):
-    #    minArea[iter2][0] = float('inf')  
+        #print(minArea)
 
 
+        # Fill in the minArea array
+    minArea[0][0] = 0 # Starting edge has zero area
 
+        # Fill in row 0 of minArea and minDir, since it's a special case as there's no row -1
+        #
+        # [2 marks]
+        
     for i in range(1, numVerts0+1):
-        print(cycleSlice0[i-1].coords, cycleSlice1[0].coords,cycleSlice0[i].coords)
-        minArea[0][i] = triangleArea(cycleSlice0[i-1].coords,cycleSlice1[0].coords,cycleSlice0[i].coords) + minArea[0][i-1]
-        print(minArea[0][i])
-        minDir[0][i] = Dir.PREV_COL
-    #print(minArea)
+            minArea[0][i] = triangleArea(cycleSlice0[i-1].coords,cycleSlice1[0].coords,cycleSlice0[i].coords) + minArea[0][i-1]
+            minDir[0][i] = Dir.PREV_COL
+        #print(minArea)
 
-    # Fill in col 0 of minArea and minDir, since it's a special case as there's no col -1
-    #
-    # [2 marks]
-    # [YOUR CODE HERE]
+        # Fill in col 0 of minArea and minDir, since it's a special case as there's no col -1
+        #
+        # [2 marks]
+        # [YOUR CODE HERE]
 
     for i in range(1, numVerts1+1):
-        minArea[i][0] = triangleArea(cycleSlice1[i-1].coords,cycleSlice0[0].coords , cycleSlice1[i].coords) + minArea[i-1][0]
-        minDir[i][0] = Dir.PREV_ROW
-
-    print(minArea)
-    
-    # Fill in the minArea array
-
-    #Starting edge has zero area
-
-    # Fill in row 0 of minArea and minDir, since it's a special case as there's no row -1
-    #
-    # [2 marks]
-   
-
-    # [YOUR CODE HERE]
+            minArea[i][0] = triangleArea(cycleSlice1[i-1].coords,cycleSlice0[0].coords , cycleSlice1[i].coords) + minArea[i-1][0]
+            minDir[i][0] = Dir.PREV_ROW
+        #print(minArea)
 
 
-    # Fill in col 0 of minArea and minDir, since it's a special case as there's no col -1
-    #
-    # [2 marks]
-    
+        # Fill in the remaining entries of minArea and minDir.  This is very similar to the above, but more general.
+        #
+        # [2 marks]
 
-    # [YOUR CODE HERE]
+    for r in range(1,len(slice1.verts)+1):
+            for c in range(1, len(slice0.verts)+1):
+                minAreaLeft = minArea[r][c-1] + triangleArea(cycleSlice0[c-1].coords,cycleSlice0[c].coords,cycleSlice1[r].coords)
+                minAreaUp = minArea[r-1][c] + triangleArea(cycleSlice1[r-1].coords,cycleSlice0[c].coords,cycleSlice1[r].coords)
+                if minAreaLeft < minAreaUp:
+                    minArea[r][c] = minAreaLeft
+                    minDir[r][c] = Dir.PREV_COL
+                else:
+                    minArea[r][c] = minAreaUp
+                    minDir[r][c] = Dir.PREV_ROW
+        #print(minArea)
+        # It's useful for debugging at this point to print out the minArea
+        # and minDir arrays together.  For example, print a table in which
+        # each element contains the integer minArea and a line (- or |) to
+        # indicate from which direction the previous min-area came from.
+        #
+        # My own code prints the following for the testSlices.dat input:
+        #
+        #   (THIS IS CORRECTED FROM THE ORIGINAL OUTPUT; SEE THE Piazza THREAD ON THIS.)
+        #
+        #               0       1       2       3       4
+        #
+        #       0       0 .    90 -   557 -  1023 -  1113 -
+        #       1      90 |   210 -   330 -   805 -  1203 |
+        #       2     549 |   330 |   480 -   630 -  1097 -
+        #       3    1008 |   796 |   630 |   750 -   870 -
+        #       4    1098 |  1188 -  1104 |   870 |   960 - 
+        #
+        # The 960 at row, column [4][4] is the minium area.  The hypen (-)
+        # at [4][4] indicates that that minimum area is arrived at from
+        # the previous column.  Then, in row, column [4][3], the vertical
+        # bar (|) indicates that that is arrived at from the previous row.
+        # This continues until reaching [0][0].
+        #
+        # This is for your debugging, if you wish.  It's not required, but
+        # is strongly recommended.
+        #
+        # [0 marks]
 
 
-    # Fill in the remaining entries of minArea and minDir.  This is very similar to the above, but more general.
-    #
-    # [2 marks]
+        # [YOUR CODE HERE, OPTIONALLY]
 
-
-    # [YOUR CODE HERE]
-
-
-    # It's useful for debugging at this point to print out the minArea
-    # and minDir arrays together.  For example, print a table in which
-    # each element contains the integer minArea and a line (- or |) to
-    # indicate from which direction the previous min-area came from.
-    #
-    # My own code prints the following for the testSlices.dat input:
-    #
-    #   (THIS IS CORRECTED FROM THE ORIGINAL OUTPUT; SEE THE Piazza THREAD ON THIS.)
-    #
-    #               0       1       2       3       4
-    #
-    #       0       0 .    90 -   557 -  1023 -  1113 -
-    #       1      90 |   210 -   330 -   805 -  1203 |
-    #       2     549 |   330 |   480 -   630 -  1097 -
-    #       3    1008 |   796 |   630 |   750 -   870 -
-    #       4    1098 |  1188 -  1104 |   870 |   960 - 
-    #
-    # The 960 at row, column [4][4] is the minium area.  The hypen (-)
-    # at [4][4] indicates that that minimum area is arrived at from
-    # the previous column.  Then, in row, column [4][3], the vertical
-    # bar (|) indicates that that is arrived at from the previous row.
-    # This continues until reaching [0][0].
-    #
-    # This is for your debugging, if you wish.  It's not required, but
-    # is strongly recommended.
-    #
-    # [0 marks]
-
-
-    # [YOUR CODE HERE, OPTIONALLY]
-
-    
-    # Walk backward through the 'minDir' array to build triangulation.
-    #
-    # Start at the maximum r,c indices and go backward, depending
-    # on whether minDir[r][c] is Dir.PREV_ROW or Dir.PREV_COL.
-    #
-    # For each step backward, construct a triangle from the three
-    # vertices: Two of the vertices are indexed by r (which comes from
-    # slice1) and c (which comes from slice0).  The remaining vertex
-    # depends on which direction (PREV_ROW or PREV_COL) you stepped
-    # backward toward.
-    #
-    # Continue going backward through the array until reaching [0][0].
-    #
-    # [3 marks]
-
+        
+        # Walk backward through the 'minDir' array to build triangulation.
     triangles = []
+    r = numVerts1
+    c = numVerts0
+
+        # Start at the maximum r,c indices and go backward, depending
+        # on whether minDir[r][c] is Dir.PREV_ROW or Dir.PREV_COL.
+        
+        # For each step backward, construct a triangle from the three
+        # vertices: Two of the vertices are indexed by r (which comes from
+        # slice1) and c (which comes from slice0).  The remaining vertex
+        # depends on which direction (PREV_ROW or PREV_COL) you stepped
+        # backward toward.
+    while True:
+            if minDir[r][c] == Dir.PREV_ROW:
+                newTriangle=Triangle([cycleSlice1[r],cycleSlice0[c],cycleSlice1[r-1]])
+                triangles.append(newTriangle)
+                r = r-1
+            else:
+                newTriangle=Triangle([cycleSlice1[r],cycleSlice0[c],cycleSlice0[c-1]])
+                triangles.append(newTriangle)
+                c = c-1
+            if r == 0 and c == 0:
+                break
+        # Continue going backward through the array until reaching [0][0].
+        #
+        # [3 marks]
+
+        # testVert = [slice0Point, slice0Point.nextV, slice1Point]
+        # test = Triangle(testVert)
+        # triangles.append(test)
 
 
-    # [YOUR CODE HERE]
+        # [YOUR CODE HERE]
 
 
-    # Return a list of the triangles that you constructed
-    
+        # Return a list of the triangles that you constructed
+        
     return triangles
 
 
