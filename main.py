@@ -234,18 +234,6 @@ def buildTriangles( slice0, slice1 ):
     
     minArea = [[0 for row in range(len(slice0.verts)+1)] for col in range(len(slice1.verts)+1)]
     minDir = [[0 for row in range(len(slice0.verts)+1)] for col in range(len(slice1.verts)+1)]
-    
-
-    for a in range(1,len(slice0.verts)):
-        minArea[0][a] = triangleArea(slice0.verts[a-1].coords, slice1.verts[0].coords, slice0.verts[a].coords) + minArea[0][a-1]
-        minDir[0][a] = Dir.PREV_COL
-
-    for b in range(1,len(slice1.verts)):
-        minArea[b][0] = triangleArea(slice1.verts[b-1].coords, slice0.verts[0].coords, slice1.verts[b].coords) + minArea[b-1][0]
-        minDir[b][0] = Dir.PREV_ROW
-        
-        
-            
 
     ##print(minArea)
     
@@ -260,7 +248,9 @@ def buildTriangles( slice0, slice1 ):
     #
     # [2 marks]
 
-
+    for a in range(1,len(slice0.verts)):
+        minArea[0][a] = triangleArea(slice0.verts[a-1].coords, slice1.verts[0].coords, slice0.verts[a].coords) + minArea[0][a-1]
+        minDir[0][a] = Dir.PREV_COL
 
     # [YOUR CODE HERE]
 
@@ -268,7 +258,9 @@ def buildTriangles( slice0, slice1 ):
     # Fill in col 0 of minArea and minDir, since it's a special case as there's no col -1
     #
     # [2 marks]
-    
+    for b in range(1,len(slice1.verts)):
+        minArea[b][0] = triangleArea(slice1.verts[b-1].coords, slice0.verts[0].coords, slice1.verts[b].coords) + minArea[b-1][0]
+        minDir[b][0] = Dir.PREV_ROW
 
     # [YOUR CODE HERE]
 
@@ -276,7 +268,7 @@ def buildTriangles( slice0, slice1 ):
     # Fill in the remaining entries of minArea and minDir.  This is very similar to the above, but more general.
     #
     # [2 marks]
-
+    
 
     # [YOUR CODE HERE]
 
