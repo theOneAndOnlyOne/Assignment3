@@ -1,3 +1,5 @@
+# Daniel Yan ()
+# Joshua Gonzales (20218629)
 # Dynamic programming for mesh generation
 #
 # Usage: python main.py <file of slices>
@@ -160,31 +162,34 @@ class Dir(enum.Enum): # for storing directions of min-area
     PREV_ROW = 1
     PREV_COL = 2
 
-
+# Algorithm by Daniel Yan and Joshua Gonzales
 def buildTriangles( slice0, slice1 ):
 
     # Find the closest pair of vertices (one from each slice) to start with.
     #
     # This can be done with "brute force" if you wish.
     #
-    # [1 mark] 
+    # [1 mark]
 
-    minval = float('inf')
-    for i in range(0,len(slice0.verts)):
-        for j in range(0,len(slice1.verts)):
-            if length(subtract(slice0.verts[i].coords, slice1.verts[j].coords)) < minval:
-                minSlice0 = slice0.verts[i]
-                index0 = i
-                minSlice1 = slice1.verts[j]
-                index1 = j
-                minval = length(subtract(slice0.verts[i].coords, slice1.verts[j].coords))
-    print("hello \n")
+    # PRE: Slice(object) for both top and bottom
+    # POST: Returns Vertex(object)
+    def bruteForceClosestPair(slice0,slice1):
+        point1 = slice0.verts[0]
+        point2 = slice1.verts[0]
+        min_dist = length(subtract(point1.coords,point2.coords))
+        numVerts0 =len(slice0.verts)
+        numVerts1 = len(slice1.verts)
+        for i in range(numVerts0-1):
+            for j in range(numVerts1-1):
+                dist = length((subtract(slice0.verts[i].coords, slice1.verts[j].coords)))
+                if dist < min_dist:
+                    min_dist = dist
+                    point1, point2 = slice0.verts[i], slice1.verts[j]
+        return point1, point2
+
+    slice0Point, slice1Point = bruteForceClosestPair(slice0,slice1)
+    # print("hello \n")
  
-                
-            
-    
-
-    
     # [YOUR CODE HERE]
 
 
@@ -196,29 +201,22 @@ def buildTriangles( slice0, slice1 ):
     #
     # [1 mark]
     
-    index0Check = index0
-    index1Check = index1
-
-    iter1 = 0
-    currentVert0 = minSlice0
-    newsliceVerts0 = []
-    newsliceVerts0.append(currentVert0)
-    while iter1 < len(slice0.verts):
-        currentVert0 = currentVert0.nextV
-        newsliceVerts0.append(currentVert0)
-        iter1 += 1
-    print(newsliceVerts0)
-
-    iter2 = 0
-    currentVert1 = minSlice1
-    newsliceVerts1 = []
-    newsliceVerts1.append(currentVert1)
-    while iter2 < len(slice1.verts):
-        currentVert1 = currentVert1.nextV
-        newsliceVerts1.append(currentVert1)
-        iter2 += 1
-    print(newsliceVerts1)
-
+    # PRE: vertex(object) and slice(object)
+    # POST: Returns array of vertex(object)
+    def cyclicPermutation(startingPoint,slice):
+        i = 0
+        currVert = startingPoint
+        cyclicPermutation = []
+        cyclicPermutation.append(currVert)
+        while i < len(slice.verts):
+            #print(str(currVert)+ " points to " + str(currVert.nextV))
+            currVert = currVert.nextV
+            cyclicPermutation.append(currVert)
+            i+=1
+        return cyclicPermutation
+    
+    newsliceVerts0, newsliceVerts1 = cyclicPermutation(slice0Point,slice0), cyclicPermutation(slice1Point,slice1)
+    
     
     # for s in slice0.verts:
     #     if s == minSlice0:
@@ -299,15 +297,13 @@ def buildTriangles( slice0, slice1 ):
         for d in range(1,len0plus1+1):
             minArea[c][d] = min((minArea[c][d-1] + triangleArea(newsliceVerts0[d-1].coords, newsliceVerts0[d].coords, newsliceVerts1[c].coords)), (minArea[c-1][d] + triangleArea(newsliceVerts1[c-1].coords, newsliceVerts0[d].coords, newsliceVerts1[c].coords)))
             
-            
+            # Determine direction is either a prev_col or prev_row
             if minArea[c][d] == minArea[c][d-1] + triangleArea(newsliceVerts0[d-1].coords, newsliceVerts0[d].coords, newsliceVerts1[c].coords):
                 minDir[c][d] = Dir.PREV_COL
             else:
                 minDir[c][d] = Dir.PREV_ROW
     
-    print(minArea)
-    # [YOUR CODE HERE]
-
+    # print(minArea)
 
     # It's useful for debugging at this point to print out the minArea
     # and minDir arrays together.  For example, print a table in which
@@ -356,6 +352,7 @@ def buildTriangles( slice0, slice1 ):
     #
     # [3 marks]
 
+    # builds triangles array for gui to build
     triangles = []
     run = 1
     slice0Len = len(newsliceVerts0)-1
@@ -369,8 +366,6 @@ def buildTriangles( slice0, slice1 ):
             slice1Len -= 1
         if slice0Len == 0 and slice1Len == 0:
             run = 0
-    # [YOUR CODE HERE]
-
 
     # Return a list of the triangles that you constructed
     
